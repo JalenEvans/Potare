@@ -17,6 +17,7 @@ export default function TabLayout() {
           title: "Group",
         }}
       />
+      {/* guard should be based on if the user is in a group or not */}
       <Tabs.Protected guard={true}>
         <Tabs.Screen
           name="compass"
