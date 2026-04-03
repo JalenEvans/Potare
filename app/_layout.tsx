@@ -1,12 +1,10 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router';
+import { ProfileProvider } from '../context/ProfileContext';
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="(tabs)"
-        options={{ headerShown: true, title: "Potare" }}
-      />
-    </Stack>
+    <ProfileProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ProfileProvider>
   );
 }
