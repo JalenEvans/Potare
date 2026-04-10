@@ -1,5 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from "expo-router";
+import React from "react";
 
 export default function TabLayout() {
   return (
@@ -63,6 +64,13 @@ export default function TabLayout() {
               color={color}
             />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="news"
+        options={{
+          headerShown: false,
+          title: "News",
         }}
       />
     </Tabs>
