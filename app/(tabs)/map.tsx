@@ -10,42 +10,23 @@ import {
 import MapView, { Camera, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { Bar } from "@/types/bar";
+import * as BarServices from "@/database/bar_services";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null,
   );
   const [locationGranted, setLocationGranted] = useState(false);
+  const [bars, setBars] = useState<Bar[]>([]);
 
-  const bars: Bar[] = [
-    {
-      id: 1,
-      name: "Burns Alley Tavern",
-      address: "354B King St, Charleston, SC 29401",
-      coords: {
-        latitude: 32.7850396,
-        longitude: -79.9353964,
-      },
-    },
-    {
-      id: 2,
-      name: "Big Gun Burger Shop & Bar",
-      address: "137 Calhoun St, Charleston, SC 29401",
-      coords: {
-        latitude: 32.7861016,
-        longitude: -79.9349774,
-      },
-    },
-    {
-      id: 3,
-      name: "A.C.'s Bar & Grill",
-      address: "467 King St, Charleston, SC 29403",
-      coords: {
-        latitude: 32.7890882,
-        longitude: -79.9386555,
-      },
-    },
-  ];
+  useEffect(() => {
+    async function fetchBars() {
+      const result = await BarServices.getBars();
+      setBars(result);
+    }
+
+    fetchBars();
+  }, []);
 
   useEffect(() => {
     async function requestLocationPermissions() {
@@ -120,7 +101,12 @@ export default function Map() {
         initialCamera={initCamera}
       >
         {bars.map((bar: Bar) => (
-          <Marker key={bar.id} coordinate={bar.coords} title={bar.name} />
+          <Marker
+            key={bar.id}
+            coordinate={bar.coords}
+            title={bar.name}
+            description={bar.id.toString()}
+          />
         ))}
       </MapView>
     </View>
