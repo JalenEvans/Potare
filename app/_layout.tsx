@@ -1,5 +1,8 @@
-import { Stack } from 'expo-router';
-import { ProfileProvider } from '../context/ProfileContext';
+import { Stack } from "expo-router";
+import { ProfileProvider } from "../context/ProfileContext";
+import { initDatabase } from "@/database/db";
+
+initDatabase();
 
 export default function RootLayout() {
   return (
