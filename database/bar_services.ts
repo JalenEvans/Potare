@@ -10,12 +10,12 @@ const set_db = (database: SQLite.SQLiteDatabase) => {
 const addBar = async (bar: BarCreate) => {
   try {
     await db.runAsync(
-      `INSERT INTO bar (name, address, coords)
-            VALUES (?, ?, ?);`,
+      `INSERT OR IGNORE INTO bar (name, address, coords)
+       VALUES (?, ?, ?);`,
       [bar.name, bar.address, JSON.stringify(bar.coords)],
     );
   } catch (e) {
-    console.error(`Error adding Bar: ${bar}.`, e);
+    console.error("Error adding bar:", e);
   }
 };
 

@@ -1,6 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProfile } from '../../../context/ProfileContext';
 
@@ -15,7 +23,22 @@ export default function EditProfileScreen() {
   } = useProfile();
 
   const handleSave = () => {
-    Alert.alert('Saved', 'Profile changes saved.');
+    if (!username.trim()) {
+      Alert.alert('Validation Error', 'Username is required.');
+      return;
+    }
+
+    if (!joinedDate.trim()) {
+      Alert.alert('Validation Error', 'Joined date is required.');
+      return;
+    }
+
+    if (bio.trim().length > 200) {
+      Alert.alert('Validation Error', 'Bio must be 200 characters or less.');
+      return;
+    }
+
+    Alert.alert('Saved', 'Profile changes saved successfully.');
     router.back();
   };
 
@@ -68,7 +91,9 @@ export default function EditProfileScreen() {
             style={[styles.input, styles.multilineInput]}
             placeholderTextColor="#9CA3AF"
             multiline
+            maxLength={200}
           />
+          <Text style={styles.helperText}>{bio.length}/200 characters</Text>
 
           <Text style={styles.label}>Joined Date</Text>
           <TextInput
@@ -176,6 +201,11 @@ const styles = StyleSheet.create({
   multilineInput: {
     minHeight: 90,
     textAlignVertical: 'top',
+  },
+  helperText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginBottom: 8,
   },
   saveButton: {
     marginTop: 20,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -9,13 +9,12 @@ import {
 } from "react-native";
 import MapView, { Camera, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
+import { router } from "expo-router";
 import { Bar } from "@/types/bar";
 import * as BarServices from "@/database/bar_services";
 
 export default function Map() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null,
-  );
+  const [location, setLocation] = useState<Location.LocationObject | null>(null);
   const [locationGranted, setLocationGranted] = useState(false);
   const [bars, setBars] = useState<Bar[]>([]);
 
@@ -100,12 +99,18 @@ export default function Map() {
         showsUserLocation={true}
         initialCamera={initCamera}
       >
-        {bars.map((bar: Bar) => (
+        {bars.map((bar) => (
           <Marker
             key={bar.id}
             coordinate={bar.coords}
             title={bar.name}
             description={bar.id.toString()}
+            onPress={() =>
+              router.push({
+                pathname: "/details/[id]",
+                params: { id: String(bar.id) },
+              })
+            }
           />
         ))}
       </MapView>
