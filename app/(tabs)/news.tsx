@@ -1,27 +1,26 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from "react";
+import { StyleSheet, Text, View, ScrollView, FlatList } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const NewsCard = ({
-  title,
-  date,
-  description,
-}: {
+interface NewsItem {
+  id: string;
   title: string;
   date?: string;
   description?: string;
-}) => (
+}
+
+const NewsCard = ({ title, date, description }: Omit<NewsItem, "id">) => (
   <View style={styles.card}>
     <View style={styles.cardHeader}>
-      <Text style={styles.cardText} numberOfLines={1}>
+      <Text style={styles.cardText}>
         {title}
       </Text>
 
       {date && (
-        <View style={{ marginLeft: 10}}>
-        <Text style={styles.date} numberOfLines={1}>
-          {date}
-        </Text>
+        <View style={{ marginLeft: 10 }}>
+          <Text style={styles.date} numberOfLines={1}>
+            {date}
+          </Text>
         </View>
       )}
     </View>
@@ -34,28 +33,45 @@ const NewsCard = ({
   </View>
 );
 
+const EXAMPLE_NEWS_DATA: NewsItem[] = [
+  {
+    id: "1",
+    title: "BIG EVENT",
+    date: "Tonight at 9PM",
+    description:
+      "Join us for live music, drink specials, and the actual 16th U.S. President Abraham Lincoln!",
+  },
+  {
+    id: "2",
+    title: "EVEN BIGGER EVENT",
+    date: "Next Saturday",
+    description:
+      "Celebrate the Parade of Planets and the cool dimensional portal it opens in the bar.",
+  },
+  {
+    id: "3",
+    title: "Bar Name: That One Bar",
+    date: "Date: Sometime",
+    description:
+      "This is where you would provide the bar info or other miscellanous info.",
+  },
+];
+
 export default function news() {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ padding: 15, paddingBottom: 40 }}>
-        <NewsCard
-          title='BIG EVENT'
-          date='Tonight at 9PM'
-          description='Join us for live music, drink specials, and the actual 16th U.S. President Abraham Lincoln!'
-        />
-
-        <NewsCard
-          title='EVEN BIGGER EVENT'
-          date='Next Saturday'
-          description={"Celebrate the Parade of Planets and the cool dimensional portal it opens in the bar. It's kinda crazy. We will also have bingo with free drinks as prizes!"}
-        />
-
-        <NewsCard
-          title='Bar Name: That One Bar'
-          date='Date: Sometime'
-          description='This is where you would provide the bar info or other miscellanous info.'
-        />
-      </ScrollView>
+      <FlatList
+        data={EXAMPLE_NEWS_DATA}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle ={{padding: 15, paddingBottom: 40}}
+        renderItem={({ item }) => (
+          <NewsCard
+            title={item.title}
+            date={item.date}
+            description={item.description}
+          />
+        )}
+      />
     </SafeAreaView>
   );
 }
@@ -63,42 +79,42 @@ export default function news() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   card: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     borderWidth: 2,
-    borderColor: '#333333',
+    borderColor: "#333333",
     minHeight: 110,
     padding: 10,
     marginBottom: 10,
   },
   cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
     marginBottom: 10,
     paddingBottom: 5,
   },
   cardText: {
     flex: 1,
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
   },
   date: {
     fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'right',
+    fontWeight: "600",
+    textAlign: "right",
   },
   descriptionContent: {
     margin: 5,
   },
   descriptionText: {
     fontSize: 14,
-    color: '#000000',
+    color: "#000000",
     lineHeight: 20,
   },
 });
