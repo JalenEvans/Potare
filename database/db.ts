@@ -1,7 +1,7 @@
 import * as SQLite from "expo-sqlite";
 import type { BarCreate } from "@/types/bar";
 import * as BarServices from "./bar_services";
-import { bars_data } from "./mock_data";
+import { bars_data } from "./bars_data";
 
 export const db = SQLite.openDatabaseSync("potare.db");
 

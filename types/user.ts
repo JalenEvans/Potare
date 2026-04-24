@@ -5,19 +5,24 @@ export type User = {
   username: string;
   email: string;
   hashedPassword: string;
-  stats?: BarStats;
+  stats?: BarStats | null;
 };
 
 export type UserCreate = {
   username: string;
   email: string;
   hashedPassword: string;
-  stats?: null;
+  stats?: BarStats | null;
 };
 
 export type UserResponse = {
   id: number;
   username: string;
   email: string;
-  stats?: BarStats;
+  stats?: BarStats | null;
+};
+
+export type LoginInput = {
+  email: string;
+  password: string;
 };
