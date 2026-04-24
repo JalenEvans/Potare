@@ -1,38 +1,67 @@
 import { Tabs } from "expo-router";
 import React from "react";
+import { Redirect, Tabs } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../context/AuthContext";
 
-export default function TabLayout() {
+export default function TabsLayout() {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!user) return <Redirect href="/login" />;
+
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: true,
+        tabBarActiveTintColor: "#E63946",
+        tabBarStyle: { backgroundColor: "#1a1a2e" },
+        headerStyle: { backgroundColor: "#1a1a2e" },
+        headerTintColor: "#fff",
+      }}
+    >
       <Tabs.Screen
         name="map"
         options={{
-          headerShown: false,
           title: "Map",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="map" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="compass"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="compass" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="group"
         options={{
-          headerShown: false,
           title: "Group",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
+          ),
         }}
       />
-      {/* guard should be based on if the user is in a group or not */}
-      <Tabs.Protected guard={true}>
-        <Tabs.Screen
-          name="compass"
-          options={{
-            headerShown: false,
-            title: "Compass",
-          }}
-        />
-      </Tabs.Protected>
       <Tabs.Screen
         name="profile"
         options={{
-          headerShown: false,
           title: "Profile",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-circle" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
