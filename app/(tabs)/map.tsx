@@ -1,112 +1,68 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Linking,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import MapView, { Camera, Marker, PROVIDER_GOOGLE } from "react-native-maps";
+import { useEffect, useState } from "react";
+import { StyleSheet, View, Text } from "react-native";
+import MapView, { Marker, Callout } from "react-native-maps";
 import * as Location from "expo-location";
-import { Bar } from "@/types/bar";
-import * as BarServices from "@/database/bar_services";
+import type { BarResponse } from "../../types/bar";
+import { getBars } from "../../services/bar_services";
 
-export default function Map() {
-  const [location, setLocation] = useState<Location.LocationObject | null>(
-    null,
-  );
-  const [locationGranted, setLocationGranted] = useState(false);
-  const [bars, setBars] = useState<Bar[]>([]);
-
-  useEffect(() => {
-    async function fetchBars() {
-      const result = await BarServices.getBars();
-      setBars(result);
-    }
-
-    fetchBars();
-  }, []);
+export default function MapScreen() {
+  const [bars, setBars] = useState<BarResponse[]>([]);
+  const [region, setRegion] = useState({
+    latitude: 32.7765,
+    longitude: -79.9311,
+    latitudeDelta: 0.05,   // zoomed out enough to see all 3 bars
+    longitudeDelta: 0.05,
+  });
 
   useEffect(() => {
-    async function requestLocationPermissions() {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.error("Permission to access location was denied.");
-        setLocationGranted(false);
-
-        Alert.alert(
-          "Permission Denied",
-          "Please allow location access in settings.",
-          [
-            { text: "Cancel", style: "cancel" },
-            { text: "Go to Settings", onPress: () => Linking.openSettings() },
-          ],
-        );
-        return;
+    const load = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        const loc = await Location.getCurrentPositionAsync({});
+        setRegion((r) => ({
+          ...r,
+          latitude: loc.coords.latitude,
+          longitude: loc.coords.longitude,
+        }));
       }
-
-      setLocationGranted(true);
-    }
-
-    requestLocationPermissions();
-
-    let subscription: Location.LocationSubscription | null = null;
-
-    async function watchPosition() {
-      subscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.Highest,
-          timeInterval: 5000,
-          distanceInterval: 10,
-        },
-        (newLocation) => {
-          setLocation(newLocation);
-        },
+      const data = await getBars();
+      const located = data.filter(
+        (b) => b.latitude != null && b.longitude != null
       );
-    }
-
-    watchPosition();
-
-    return () => {
-      if (subscription) subscription.remove();
+      console.log("MAP BARS:", JSON.stringify(located));
+      setBars(located);
     };
+    load();
   }, []);
-
-  if (!locationGranted || !location) {
-    return (
-      <View style={styles.activityIndicator}>
-        <ActivityIndicator />
-        <Text>Loading Location Data...</Text>
-      </View>
-    );
-  }
-
-  const initCamera: Camera = {
-    center: {
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    },
-    heading: 0,
-    pitch: 0,
-    zoom: 15,
-  };
 
   return (
-    <View>
+    <View style={styles.container}>
       <MapView
-        provider={PROVIDER_GOOGLE}
         style={styles.map}
-        showsUserLocation={true}
-        initialCamera={initCamera}
+        region={region}
+        onRegionChangeComplete={setRegion}
+        showsUserLocation
+        showsMyLocationButton
       >
-        {bars.map((bar: Bar) => (
+        {bars.map((bar) => (
           <Marker
             key={bar.id}
-            coordinate={bar.coords}
+            coordinate={{
+              latitude: bar.latitude!,
+              longitude: bar.longitude!,
+            }}
+            pinColor="#E63946"
             title={bar.name}
-            description={bar.id.toString()}
-          />
+          >
+            <Callout>
+              <View style={styles.callout}>
+                <Text style={styles.calloutTitle}>{bar.name}</Text>
+                {bar.address ? (
+                  <Text style={styles.calloutAddress}>{bar.address}</Text>
+                ) : null}
+              </View>
+            </Callout>
+          </Marker>
         ))}
       </MapView>
     </View>
@@ -114,13 +70,9 @@ export default function Map() {
 }
 
 const styles = StyleSheet.create({
-  activityIndicator: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  map: {
-    width: "100%",
-    height: "100%",
-  },
+  container: { flex: 1 },
+  map: { flex: 1 },
+  callout: { padding: 6, maxWidth: 200 },
+  calloutTitle: { fontWeight: "700", fontSize: 14 },
+  calloutAddress: { fontSize: 12, color: "#555", marginTop: 2 },
 });

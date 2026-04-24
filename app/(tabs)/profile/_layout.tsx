@@ -1,11 +1,11 @@
-import { Stack } from 'expo-router';
+import { Stack } from "expo-router";
 
 export default function ProfileLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="user" options={{ headerShown: false }} />
-      <Stack.Screen name="settings" options={{ headerShown: false }} />
-      <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
+    <Stack screenOptions={{ headerShown: true, headerTintColor: "#fff", headerStyle: { backgroundColor: "#1a1a2e" } }}>
+      <Stack.Screen name="user" options={{ title: "Profile" }} />
+      <Stack.Screen name="edit-profile" options={{ title: "Edit Profile" }} />
+      <Stack.Screen name="settings" options={{ title: "Settings" }} />
     </Stack>
   );
 }
